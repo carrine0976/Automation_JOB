@@ -83,9 +83,13 @@ class Frontend:
             self.response_value_list=response_json.get('value',[])
             if self.response_value_list:
                 self.response_value_info=self.response_value_list[0]
-                self.trans_id=self.response_value_info.get('transactionId')
-                logging.info(f"成功拿到交易ID{self.trans_id}")
-            return self.trans_id
+                Trans_id=self.response_value_info.get('transactionId') 
+                Condition_status=self.response_value_info.get('conditionStatus',[])
+                if Trans_id and not Condition_status:
+                    self.trans_id=Trans_id
+                    logging.info(f"成功拿到交易ID{self.trans_id}")
+                    return self.trans_id
+            return None
         else:
             logging.error(f"交易ID查詢失敗")
             return None
@@ -142,14 +146,14 @@ class Frontend:
             self.trans_id=trans_id
             self.approve_to_receive_ticket()
             success_count+=1
-            logging.info(f"總共30張票卷, 領取第{i+1}張成功")
+            logging.info(f"領取第{i+1}張成功")
             time.sleep(1)
 
 if __name__ == "__main__":
   
     #填入玩家帳號
     credential = {
-        "username": "carrine017",
+        "username": "carrine200",
         "password": "123qwe"
     }
     try:    

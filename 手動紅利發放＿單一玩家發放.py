@@ -79,7 +79,6 @@ def create_bonus(player:str,bonusAmount:int,bonusPointAmount:int,ticketId:int,ti
         
         response_data = response.json()
         logging.info(f"狀態碼: {response.status_code}")
-        logging.info(f"響應內容: {response_data}")
         
         
         if response_data.get("success") == True:
@@ -231,21 +230,20 @@ if __name__ == "__main__":
         print("啟動時取得 token 發生錯誤:", e)
 
     #填入玩家帳號
-    CREATE_BONUS_PLAYER = "carrine017"
+    CREATE_BONUS_PLAYER = "carrine200"
     bonusAmount=1000
     bonusPointAmount=0
     count=2
     random_ticket=random.choice([1004007,1004006,1004008,1004010,1004009,1010009])
     ticketQuantity=30
     #ticket=1034007
-    prmotion_id=["3638044", "3758047", "3762068"]
-    for promo in prmotion_id:
-        create_bonus(CREATE_BONUS_PLAYER,bonusAmount=bonusAmount,bonusPointAmount=bonusPointAmount,ticketId=random_ticket,ticketQuantity=ticketQuantity,prmotion_id=promo)
-        Customerid,claimid = Search_Customer_bonus(CREATE_BONUS_PLAYER)
-        if Customerid is not None and claimid is not None:
-            Confirm_Customer_bonus(Customerid,claimid)
-        else:
-            logging.error("沒有拿到ID")
+    prmotion_id=3638044
+    create_bonus(CREATE_BONUS_PLAYER,bonusAmount=bonusAmount,bonusPointAmount=bonusPointAmount,ticketId=random_ticket,ticketQuantity=ticketQuantity,prmotion_id=prmotion_id)
+    Customerid,claimid = Search_Customer_bonus(CREATE_BONUS_PLAYER)
+    if Customerid is not None and claimid is not None:
+        Confirm_Customer_bonus(Customerid,claimid)
+    else:
+        logging.error("沒有拿到ID")
    
     
     

@@ -76,7 +76,7 @@ class Frontend:
             'X-Requested-With': 'XMLHttpRequest',
         }
         payload={
-             "promoCode": self.promo
+             "promoCode": promo
         }
         
         cookies = {
@@ -100,17 +100,18 @@ class Frontend:
         success_count=0
         for promo in self.promo_list:
             if self.click_promo_code(promo):
+                self.promo=promo
                 success_count+=1
                 logging.info(f"共{len(self.promo_list)}組優惠碼, 領取{success_count}組成功")
-        time.sleep(1)
+                time.sleep(0.5)
 if __name__ == "__main__":
   
     #填入玩家帳號
     credential = {
-        "username": "ggg444",
+        "username": "carrine000",
         "password": "123qwe"
     }
-    PromoCode_list=['HEOOOMY2J','BNOCZQ7CFM','O7KKKH']
+    PromoCode_list=['8YC15UWC9J','QFK1AY']
     run_time="12:19"
     try:    
         frontend = Frontend(credential,PromoCode_list)

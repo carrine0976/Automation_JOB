@@ -1,4 +1,4 @@
-import requests,logging,schedule,time
+import requests,logging,time
 from datetime import datetime,timedelta
 
 logging.basicConfig(

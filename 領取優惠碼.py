@@ -7,7 +7,7 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 class Frontend:
-    def __init__(self,credential:dict,PromoCode_list:list):
+    def __init__(self,credential:dict):
         self.session=requests.Session()
         self.username=''
         self.userid=''
@@ -15,8 +15,9 @@ class Frontend:
         self.token=None
         self.token_expire=None
         self.token=self.get_token_login(credential['username'],credential['password'])
-        self.promo_list=PromoCode_list
-        self.promo=''
+        self.PromoCode_list=''
+        self.promoID=''
+        self.i=0
     def get_token_login(self, username, password):
         try:
 
@@ -53,8 +54,39 @@ class Frontend:
         return (self.token is not None and 
                 self.token_expire is not None and 
                 datetime.now() < self.token_expire)
+    
+    def get_promo_code_list(self):
+        if not self.is_token_valid():
+            logging.info("token 過期, 重新登入")
+            self.get_token_login(self.credential['username'],self.credential['password'])
+        if self.token is None:
+            return
+        current_time=datetime.now()
+        unit_time=str(int(current_time.timestamp()*1000))
+        login_URL=f"http://www.sit-gi8viet.com/wps/relay/PROMOFE_getPromoCode?_={unit_time}"
+        headers={
+            'Content-Type': 'application/json',
+            'X-Timestamp':unit_time,
+            "Authorization":self.token,
+            'Connection': 'keep-alive',
+            'Language': 'VI',
+            'Merchant': 'gi8viet',
+            'Origin': 'http://www.sit-gi8viet.com',
+            'Referer': 'http://www.sit-gi8viet.com/',
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
+            'X-Requested-With': 'XMLHttpRequest',
+        }
         
-    def click_promo_code(self,promo):
+        response = self.session.get(login_URL, headers=headers, verify=False)
+        response_json=response.json()
+
+        if response_json.get('success')==True:
+            self.PromoCode_list=response_json.get("value",[])
+            
+        else:
+            logging.error(f"沒拿到優惠碼ID")
+            return 
+    def click_promo_code(self,promoCode):
         if not self.is_token_valid():
             logging.info("token 過期, 重新登入")
             self.get_token_login(self.credential['username'],self.credential['password'])
@@ -76,7 +108,7 @@ class Frontend:
             'X-Requested-With': 'XMLHttpRequest',
         }
         payload={
-             "promoCode": promo
+             "promoCode": promoCode
         }
         
         cookies = {
@@ -98,23 +130,29 @@ class Frontend:
     
     def proccess_all_promoCode(self):
         success_count=0
-        for promo in self.promo_list:
-            if self.click_promo_code(promo):
-                self.promo=promo
+        self.get_promo_code_list()
+        for item in self.PromoCode_list:
+            promoCode=item.get("promoCode")
+            description=item.get("description","")
+            if description!='carrine優惠碼':
+                continue
+            success=self.click_promo_code(promoCode)
+            if success:
                 success_count+=1
-                logging.info(f"共{len(self.promo_list)}組優惠碼, 領取{success_count}組成功")
-                time.sleep(0.5)
+            time.sleep(0.5)
+            logging.info(f"領取第{success_count}組優惠碼成功") 
+        else:
+            logging.info(f"carrine優惠碼 已領取完")
 if __name__ == "__main__":
   
     #填入玩家帳號
     credential = {
-        "username": "carrine000",
+        "username": "pop888",
         "password": "123qwe"
     }
-    PromoCode_list=['8YC15UWC9J','QFK1AY']
     run_time="12:19"
     try:    
-        frontend = Frontend(credential,PromoCode_list)
+        frontend = Frontend(credential)
         if frontend.token:
             logging.info(f"登入成功 Token: {frontend.token}")
             #frontend.click_promo_code()

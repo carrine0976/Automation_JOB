@@ -132,7 +132,7 @@ if __name__ == "__main__":
   
     #填入玩家帳號
     credential = {
-        "username": "rrr362",
+        "username": "pvp003",
         "password": "123qwe"
     }
     try:    

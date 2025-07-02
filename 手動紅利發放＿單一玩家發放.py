@@ -237,7 +237,7 @@ if __name__ == "__main__":
     random_ticket=random.choice([1004007,1004006,1004008,1004010,1004009,1010009])
     ticketQuantity=30
     #ticket=1034007
-    prmotion_id=3638044
+    prmotion_id=4021089
     create_bonus(CREATE_BONUS_PLAYER,bonusAmount=bonusAmount,bonusPointAmount=bonusPointAmount,ticketId=random_ticket,ticketQuantity=ticketQuantity,prmotion_id=prmotion_id)
     Customerid,claimid = Search_Customer_bonus(CREATE_BONUS_PLAYER)
     if Customerid is not None and claimid is not None:

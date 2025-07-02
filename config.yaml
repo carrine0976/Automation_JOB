@@ -1,0 +1,41 @@
+promtion_ids:
+- "4022089" # 新手任務獎勵
+- "4023089" # 註冊獎勵
+- "4023090" # 關懷救援金
+- "4023091" # App download
+- "4021089" # 升級獎勵
+- "4023092" # 幸運抽獎
+- "4023093" # 筆筆存送
+- "4023094" # 首存
+- "4023095" # 二存
+- "4023096" # 三存
+- "4023097" # 四存
+- "4023098" # 五存
+- "3977092" # 累計存款
+- "4023100" # 存款達標
+- "4023101" # 手動活動紅利
+- "4023102" # 手工報名活動
+- "4023103" # 比賽排行榜
+- "4023104" # 哩程碑
+- "4023105" # 排行榜＋哩程碑
+
+promtions_name:
+- "carrine mission+milestone"  # 排行榜＋哩程碑
+- "carrine milestone" # 哩程碑
+- "carrine mission" #比賽排行榜
+- "carrine 手工報名" # 手工報名活動
+- "carrine 手動活動紅利"  # 手動活動紅利
+- "carrine 存款達標"  # 存款達標
+- "carrine 累計存款"  # 累計存款
+- "carrine fifth deposit"  # 五存
+- "carrine fourth deposit"  # 四存
+- "carrine third deposit"  # 三存
+- "carine second deposit"  # 二存
+- "carrine first deposit"  # 首存
+- "carrine 筆筆"  # 筆筆存送
+- "carrine lucky"  # 幸運抽獎
+- "tcg-108181 upgrade test"  # 升級獎勵
+- "carrine app download"  # App download
+- "carrine 關懷援助金"  # 關懷救援金
+- "carrine 註冊獎勵"  # 註冊獎勵
+- "carrine test"  # 新手任務獎勵

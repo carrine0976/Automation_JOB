@@ -186,7 +186,7 @@ class Frontend:
             "deviceId": "b3422fd0-9519-47cf-a03d-6bce63e25885",
             "mcsBankCode": "SS For Modify Bank",
             "token":self.token,
-            "promotionId":4305089,
+            "promotionId":4308094,
             "promoClaimId":promoClaimId
         }
         cookies={
@@ -348,7 +348,8 @@ def procedure():
             credential = {
             "username": username,
             "password": password
-        }
+            }
+            credential_be = {"operatorName": "carrine03", "password": "Test@1234"}
             try:
                 frontend = Frontend(credential)
                 if frontend.token:
@@ -359,7 +360,7 @@ def procedure():
                     five_amount=deposit_info.get("five_depost")
                     if first_amount:
                         frontend.deposit_QAD(credential['username'],first_amount)
-                        backend=Backend(credential)
+                        backend=Backend(credential_be)
                         if backend.token:
                             deposit_id=backend.deposit(username,merchantCode)
                             backend.approve_deposit(deposit_id,merchantCode)

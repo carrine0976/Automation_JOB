@@ -1,4 +1,5 @@
-import requests,logging
+import requests
+import logging
 from datetime import datetime,timedelta
 import threading
 import concurrent.futures
@@ -63,8 +64,10 @@ class B_end:
         return token_data.get("token")
 
     def get_executionNo(self):
-        API_URL = "http://sit-admin2.tcg.com/tac/api/relay/get/mcs-manual-promotion-cond-progress?merchantCode=gi8viet" 
-        
+        API_URL = "http://sit-admin2.tcg.com/tac/api/relay/get/mcs-manual-promotion-cond-progress" 
+        params={
+            "merchantCode":self.credential["Merchant"]
+        }
         headers = {
             "Accept": "application/json, text/plain, */*",
             "Accept-Language": "en-US,en;q=0.9",
@@ -82,14 +85,17 @@ class B_end:
         }
         
         try:
-            response = requests.get(API_URL, headers=headers, verify=False)
+            response = requests.get(API_URL, headers=headers,params=params, verify=False)
             response.raise_for_status()
             
             response_data = response.json()
             
-            if response_data.get('success') == True:
+            if response_data.get('success') :
                 value=response_data.get('value',[])
-                executionNo=value[0].get("executionNo")
+                if self.credential["operatorName"]=="carrine01":
+                    executionNo=value[1].get("executionNo")
+                else:
+                    executionNo=value[0].get("executionNo")
                 
                 logging.info(f"拿到補派id {executionNo} ")
                 return executionNo
@@ -106,7 +112,7 @@ class B_end:
         API_URL = "http://10.80.1.19:7001/mcs-console/promotion/manual/retry" 
         payload={ 
             "executionNo": executionNo, 
-            "merchantCode": "gi8viet" 
+            "merchantCode":self.credential["Merchant"]
         }
         headers = {
         "Accept": "application/json, text/plain, */*",
@@ -121,8 +127,8 @@ class B_end:
             
             response_data = response.json()
             
-            if response_data.get('success') == True:
-                logging.info(f"補派成功: ")
+            if response_data.get('success') :
+                logging.info("補派成功: ")
                 return True
                 
             else:
@@ -146,14 +152,14 @@ def main():
         {
             "operatorName": "parisv01",
             "password": "Aa123456@",
-            "Merchant": "gi8viet",
-            "MerchantCode": "gi8viet",
+            "Merchant": "huamei",
+            "MerchantCode": "huamei",
         },
         {
             "operatorName": "carrine01",
             "password": "Test@1234",
-            "Merchant": "gi8viet",
-            "MerchantCode": "gi8viet",
+            "Merchant": "huamei",
+            "MerchantCode": "huamei",
             #"Merchant": "huamei",
             #"MerchantCode": "huamei",
         }

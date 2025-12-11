@@ -64,7 +64,7 @@ class B_end:
         "bonusAmount": bonusAmount,
         "bonusPointAmount": bonusPointAmount,
         "promotionId": prmotion_id,
-        "toReqAmount": 0,
+        "toReqAmount": 5,
         "ticketId": ticketId,
         "ticketQuantity": ticketQuantity
     }
@@ -276,7 +276,7 @@ class B_end:
             response_data=response.json()
             logging.info(f"{response_data}")
             if response_data.get("success") == True:
-                self.record_data_list=response_data.get('value',[])
+                self.record_data_list=response_data.get('value',{})
                 return True
             else:
                 response_data.get("message", "未知錯誤")
@@ -302,7 +302,7 @@ class B_end:
         yaml_path=os.path.join(current_dir,"config.yaml")
         with open(yaml_path,"r",encoding="utf-8") as f:
             config=yaml.safe_load(f)
-        prmotion_id_multiple=config.get("promtion_ids",[])
+        prmotion_id_multiple=config.get("promotion_ids_for_deposit_2",[])
         prmotion_name=config.get("promtions_name",[])
         confirm_result = ''
         create_result=''
@@ -341,7 +341,7 @@ class B_end:
                     ]
                 )
         if self.Bonus_record_page():
-            Bonus_record={str(item.get("promotionClaimId") for item in self.record_data_list)}
+            Bonus_record={str(item.get("promotionClaimId")) for item in self.record_data_list}
 
             for row in ws.iter_rows(min_row=2,max_row=ws.max_row):
                 claimid=row[10].value
@@ -359,7 +359,7 @@ class B_end:
 if __name__ == "__main__":
 
     credential = {
-        "operatorName": "carrine01",
+        "operatorName": "carrine03",
         "password": "Test@1234"
     }
     username="xxx555"

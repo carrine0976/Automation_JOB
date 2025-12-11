@@ -212,29 +212,35 @@ def Confirm_Customer_bonus(token,Customerid:int,claimid:int ):
         logging.error(f"其他錯誤: {e}")
         return False
 if __name__ == "__main__":
+    current_dir=os.path.dirname(__file__)
+    yaml_path=os.path.join(current_dir,"config.yaml")
+    with open(yaml_path,"r",encoding="utf-8") as f:
+        config=yaml.safe_load(f)
     try:
         token = get_token()
         print("取得的 token:", token)
     except Exception as e:
         print("啟動時取得 token 發生錯誤:", e)
-    bonus=5
-    point=0
-    #ticket_list=config.get("order_ticket_id")
+    bonusAmount=3
+    bonusPointAmount=4
+    ticket_list=config.get("ticket_id")
     #bonusAmount_list= [1,2,3]
     #bonusPointAmount_list=[2,3,4]
     #填入玩家帳號
-    customer='tty777'
-    promtion=4023091
+    customer="kdd0014"
     count=1
-    random_ticket=1113014
+    random_ticket=1087008
     ticketQuantity=1
-    create_bonus(token,customer,bonusAmount=bonus,bonusPointAmount=point,ticketId=random_ticket,ticketQuantity=ticketQuantity,prmotion_id=promtion)
-        
-    Customerid,claimid = Search_Customer_bonus(token,customer)
-    if Customerid is not None and claimid is not None:
-        Confirm_Customer_bonus(token,Customerid,claimid)
-    else:
-        logging.error("沒有拿到ID")
+    #ticket=1034007
+    promoid=4021089
+    for ticket in ticket_list:
+        create_bonus(token,customer,bonusAmount=bonusAmount,bonusPointAmount=bonusPointAmount,ticketId=ticket,ticketQuantity=ticketQuantity,prmotion_id=promoid)
+            
+    #Customerid,claimid = Search_Customer_bonus(CREATE_BONUS_PLAYER)
+    #if Customerid is not None and claimid is not None:
+        #Confirm_Customer_bonus(Customerid,claimid)
+    #else:
+        #logging.error("沒有拿到ID")
    
     
     

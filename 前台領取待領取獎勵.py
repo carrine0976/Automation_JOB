@@ -174,7 +174,7 @@ if __name__ == "__main__":
   
     #填入玩家帳號
     credential = {
-        "username": "pop333",
+        "username": "xxx555",
         "password": "123qwe"
     }
     try:    

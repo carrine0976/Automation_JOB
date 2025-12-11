@@ -1,13 +1,19 @@
-import requests,logging,time
+import requests,logging
+import threading
+import concurrent.futures,time,datetime,time
 from datetime import datetime,timedelta
-import traceback
+import traceback,random
 
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
-class Frontend:
+start_event=threading.Event()
+request_lock = threading.Lock()
+
+
+class B_end:
     def __init__(self,credential:dict):
         self.session=requests.Session()
         self.username=''
@@ -17,6 +23,57 @@ class Frontend:
         self.token_expire=None
         self.token=self.get_token_login(credential['username'],credential['password'])
         self.trans_id=''
+        self.lock=threading.Lock()
+    def rate_limit(self,method,url,max_retries=3,**kwargs):
+        for attempt in range(max_retries):
+            try:
+                with request_lock:
+                    time.sleep(random.uniform(0.3, 0.5))
+                    if method.upper()=='GET':
+                        response=self.session.get(url,**kwargs)
+                    else:
+                        response=self.session.post(url,**kwargs)
+
+                    response_json=response.json()
+                    if response.status_code==200 and response_json.get('success')==True:
+                        return response
+                    else:
+                        error_code = response_json.get('errorCode', '')
+                        if 'TOO_MANY_REQUEST' in error_code:
+                            time.sleep(random.uniform(0.1, 0.5))
+                            if attempt<max_retries-1:
+                                continue
+                    return response
+
+            except requests.RequestException as e:
+                logging.error(f"[{self.username}] 請求失敗: {e}")
+                if attempt<max_retries-1:
+                    time.sleep(random.uniform(0.1, 0.5))
+    def rate_limit_approve(self,method,url,max_retries=3,**kwargs):
+        for attempt in range(max_retries):
+            try:
+               
+                if method.upper()=='GET':
+                    response=self.session.get(url,**kwargs)
+                else:
+                    response=self.session.post(url,**kwargs)
+
+                response_json=response.json()
+                if response.status_code==200 and response_json.get('success')==True:
+                    return response
+                else:
+                    error_code = response_json.get('errorCode', '')
+                    if 'TOO_MANY_REQUEST' in error_code:
+                        time.sleep(random.uniform(0.1, 0.3))
+                        if attempt<max_retries-1:
+                            continue
+                return response
+
+            except requests.RequestException as e:
+                logging.error(f"[{self.username}] 請求失敗: {e}")
+                if attempt<max_retries-1:
+                    time.sleep(random.uniform(0.1, 0.3))
+
     def get_token_login(self, username, password):
         try:
 
@@ -35,7 +92,7 @@ class Frontend:
                 'password':password
             } 
             
-            requests_data=self.session.post(login_url,json=login_data,headers=headers)
+            requests_data=self.rate_limit("POST",login_url,json=login_data,headers=headers)
             print(requests_data.text)
             self.username = requests_data.json()['value']['userName']
             self.userid = requests_data.json()['value']['id']
@@ -53,11 +110,10 @@ class Frontend:
         return (self.token is not None and 
                 self.token_expire is not None and 
                 datetime.now() < self.token_expire)
-    
     def get_Ticket_transaction_ID(self):
         if not self.is_token_valid():
             logging.info("token 過期, 重新登入")
-            self.get_token_login(credential['username'],credential['password'])
+            self.get_token_login(self.credential['username'],self.credential['password'])
         if self.token is None:
             return
         current_time=datetime.now()
@@ -76,8 +132,7 @@ class Frontend:
             'AF_SYNC': '1751265971390'
         }
         
-        response=self.session.get(login_URL,headers=headers,cookies=cookies)
-        response.raise_for_status()
+        response=self.rate_limit("GET",login_URL,headers=headers,cookies=cookies)
         response_json=response.json()
         
         if response_json.get('success')==True:
@@ -94,11 +149,10 @@ class Frontend:
         else:
             logging.error(f"交易ID查詢失敗")
             return None
-        
     def approve_to_receive_ticket(self):
         if not self.is_token_valid():
             logging.info("token 過期, 重新登入")
-            self.get_token_login(credential['username'],credential['password'])
+            self.get_token_login(self.credential['username'],self.credential['password'])
         if self.token is None:
             return
         login_URL=f"http://www.sit-gi8viet.com/wps/relay/PROMOFE_claimTicket"
@@ -127,8 +181,7 @@ class Frontend:
         }
 
         
-        response=self.session.post(login_URL,headers=headers,json=payload,cookies=cookies)
-        response.raise_for_status()
+        response=self.rate_limit_approve("POST",login_URL,headers=headers,json=payload,cookies=cookies)
         response_json=response.json()
         
         if response_json.get('success')==True:
@@ -143,39 +196,52 @@ class Frontend:
             logging.error(f"領取票卷失敗")
             logging.error(traceback.format_exc())
             return False
-            
-    def poccess_all_ticket(self):
-        success_count=0
-        for i in range(50):
-            if i%5==0:
-                logging.info("重新登入")
-                self.get_token_login(credential['username'],credential['password'])
-            trans_id=self.get_Ticket_transaction_ID()
-            if not trans_id:
-                break
-            self.approve_to_receive_ticket()
-            success_count+=1
-            logging.info(f"領取第{i+1}張成功")
-            time.sleep(1)
+        
 
-if __name__ == "__main__":
-  
-    #填入玩家帳號
-    credential = {
-        "username": "rrr778",
-        "password": "123qwe"
-    }
-    try:    
-        frontend = Frontend(credential)
-        if frontend.token:
-            logging.info(f"登入成功 Token: {frontend.token}")
-            frontend.poccess_all_ticket()
-            
-        else:
-            logging.error("登入失敗 無法取得Token")
     
-    except Exception as e:
-        logging.error(f"啟動時發生錯誤: {e}")
-        logging.error(traceback.format_exc())
+def main():
+    b_object=[]
+    credentials = [
+        {
+            "username": "pmp006",
+            "password": "123qwe"
+        },
+        {
+            "username": "pmp909",
+            "password": "123qwe"
+        },
+        {
+            "username": "tty777",
+            "password": "123qwe"
+        },
+        {
+            "username": "pmp908",
+            "password": "123qwe"
+        }
+        
+    ]
+    for credential in credentials:
+            b_end = B_end(credential)
+            if b_end.token:
+                trans_id=b_end.get_Ticket_transaction_ID()
+                if trans_id:
+                    b_object.append(b_end)
+            else:
+                logging.error(f"[{credential['username']}] 登入失敗 無法取得Token")
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(b_object)) as executor:
+        future= [executor.submit(b_end.approve_to_receive_ticket) for b_end in b_object]
+
+        complete_future=concurrent.futures.as_completed(future,timeout=10)
+        for futures in complete_future:
+            try:
+                futures.result()
+            except Exception as e :
+                logging.error(f"操作異常{e}")
+    logging.info("所有玩家操作完成")
+main()
+
+            
+
+
 
    

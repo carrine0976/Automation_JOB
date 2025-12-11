@@ -82,26 +82,9 @@ ticket_id_expire:
 - "1067006" # 拼多多
 
 testing_account:
-- "wdd00" 
-- "wdd01"
-- "wdd02" 
-- "wdd03" 
-- "wdd04" 
-- "wdd05"
-- "wdd06" 
-- "wdd07" 
-- "wdd08" 
-- "wdd09"
-- "wdd010" 
-- "wdd011" 
-- "wdd012" 
-- "wdd013"
-- "wdd014" 
-- "wdd015" 
-- "wdd016" 
-- "wdd017" 
-- "wdd018"
-- "wdd019" 
+- "bdd801" 
+- "bdd810"
+
 
 promotion_ids_for_deposit_2:
 - "4184109" # 首存

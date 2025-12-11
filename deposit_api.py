@@ -5,6 +5,7 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
+
 def get_token():
     login_url="http://sit-admin2.tcg.com/tac/api/login/password"
     payload={
@@ -17,8 +18,8 @@ def get_token():
         "Authorization": "",
         "Connection": "keep-alive",
         "Content-Type": "application/json",
-        "Merchant": "gi8viet",
-        "MerchantCode": "gi8viet",
+        "Merchant": 'gi8viet',
+        "MerchantCode": 'gi8viet',
         "Origin": "http://sit-admin2.tcg.com",
         "Referer": "http://sit-admin2.tcg.com/",
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
@@ -38,7 +39,7 @@ def get_token():
     return token_data.get("token")
 
 
-def deposit(token):
+def deposit(token,merchantCode):
     API_URL = "http://sit-admin2.tcg.com/tac/api/relay/get/mcs-player-deposit-search" 
     start_time = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d 00:00:00")
     end_time = datetime.now().strftime("%Y-%m-%d 23:59:59")
@@ -55,7 +56,7 @@ def deposit(token):
         "dateFrom":start_time,
         "dateTo":end_time,
         "tcpBankCode":"",
-        "merchantCode":"gi8viet",
+        "merchantCode":merchantCode,
         "pageNo":1,
         "pageSize":1000
 
@@ -67,12 +68,12 @@ def deposit(token):
     "Authorization": token,
     "Connection": "keep-alive",
     "Language": "zh_CN",
-    "Merchant": "gi8viet",
+    "Merchant": merchantCode,
     "Origin": "http://sit-admin2.tcg.com",
     "Referer": "http://sit-admin2.tcg.com/20000",
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
     "environment": "TCG3",
-    "merchantCode": "gi8viet",
+    "merchantCode": merchantCode,
     "platform": "TCG"
     }
     cookies = {
@@ -84,9 +85,6 @@ def deposit(token):
         
         
         response_data = response.json()
-        logging.info(f"狀態碼: {response.status_code}")
-        logging.info(f"響應內容: {response_data}")
-        
         
         if response_data.get('success') == True:
             logging.info(f"搜尋充值對象成功: ")
@@ -103,7 +101,7 @@ def deposit(token):
     except Exception as e:
         logging.error(f"狀態碼: {response.status_code}",e)
         return []
-def approve_deposit(token,deposit_Info):
+def approve_deposit(token,deposit_Info,merchantCode):
     try:
         API_URL="http://sit-admin2.tcg.com/tac/api/relay/post/mcs-v3-deposit-processAndApprove"
         if deposit_Info.get("requestAmount") is None:
@@ -120,7 +118,7 @@ def approve_deposit(token,deposit_Info):
         "operatorRemark": None,
         "internalRemark": None,
         "version": 1,
-        "merchantCode": "gi8viet",
+        "merchantCode":merchantCode,
         "isProcessAndApprove": True
         }
         headers = {
@@ -130,12 +128,12 @@ def approve_deposit(token,deposit_Info):
         "Connection": "keep-alive",
         "Content-Type": "application/json",
         "Language": "zh_CN",
-        "Merchant": "gi8viet",
+        "Merchant": merchantCode,
         "Origin": "http://sit-admin2.tcg.com",
         "Referer": "http://sit-admin2.tcg.com/20000",
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
         "environment": "TCG3",
-        "merchantCode": "gi8viet",
+        "merchantCode": merchantCode,
         "platform": "TCG"
         }
         cookies = {
@@ -144,8 +142,6 @@ def approve_deposit(token,deposit_Info):
         response=requests.post(API_URL, json=payload,cookies=cookies,verify=False, headers=headers)
         response.raise_for_status()
         response_data = response.json()
-        logging.info(f"狀態碼: {response.status_code}")
-        logging.info(f"響應內容: {response_data}")
 
         if response_data.get('success')==True:
             logging.info(f"成功批准ID: {deposit_Info["depositId"]} , 金額: {deposit_Info['requestAmount']}")
@@ -159,18 +155,18 @@ def approve_deposit(token,deposit_Info):
     
 def batch_approve():
     try:
+        merchantCode="gi8viet" #gi8viet rollbet
         token=get_token()
-        deposit_list=deposit(token)
+        deposit_list=deposit(token,merchantCode)
         if not deposit_list:
             logging.info("沒有找到充值ID")
             return
         total_count=len(deposit_list)
         success_count=0
         fail_count=0
-
         for index, deposit_Info in enumerate(deposit_list,1):
             logging.info(f"正在處理第{index}/{total_count}的充值list,金額{deposit_Info["requestAmount"]}")
-            if approve_deposit(token,deposit_Info):
+            if approve_deposit(token,deposit_Info,merchantCode):
                 success_count+=1
             else:
                 fail_count+=1

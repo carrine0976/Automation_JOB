@@ -2,30 +2,13 @@ import requests
 import logging
 import oracledb
 from datetime import datetime
+import time
 
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
-
-def Change_Password(customer_id:str):
-    URL="http://10.80.1.22:7001/tcg-uss-ae/password"
-
-    header={
-        "Content-Type":"application/json"
-    }
-    payload={ 
-        "customerId": customer_id, 
-        "needLogInToChangePassword": True, 
-        "password": "123qwe"
-        }
-    resposne=requests.put(URL,headers=header,json=payload,verify=False)
-    resposne_json=resposne.json()
-    if resposne_json.get("success"):
-        logging.info("更改密碼完成")
-    else:
-        logging.error(f"更改失敗{resposne.text}")
 
 def DB_connect(SQL):
     host="10.80.1.11"
@@ -80,10 +63,51 @@ def DB_connect(SQL):
             cursor.close()
         if conn in locals() and conn:
             conn.close()
-        
+            
+def request_code(customer_id):
+    count=0
+    URL="http://10.80.1.19:8084/promo-fe/resources/postcard_code/request_code"
+
+    header={
+        "Content-Type":"application/json",
+        "CustomerId":customer_id,
+        "CustomerIP":"100.100.100.100"
+    }
+    
+    resposne=requests.post(URL,headers=header,verify=False)
+    endTime=datetime.now()
+    logging.info(f"第一次領取後的時間{endTime}")
+    count+=1
+    resposne_json=resposne.json()
+    value=resposne_json.get("value")
+    postcardCode=value.get("postcardCode")
+    logging.info(postcardCode)
+    max_retry=50
+    if resposne_json.get("success"):
+        for attemp in range(1, max_retry+1):
+            time.sleep(1)
+            startTime=datetime.now()
+            resposne=requests.post(URL,headers=header,verify=False)  
+            count+=1
+            resposne_json=resposne.json()
+            value=resposne_json.get("value")
+            postcardCode=value.get("postcardCode")
+            if not postcardCode:
+                logging.info(postcardCode)
+                logging.info(f"第{count}次嘗試領取時間{startTime}")
+            else:
+                logging.info(postcardCode)
+                logging.info(f"最後次嘗試領取時間{startTime}")
+                CostTime=startTime-endTime
+                logging.info(f"時間間隔{CostTime}")
+                break
+                
+    else:
+        logging.error(f"{resposne.text}")
+
+
 def main():
-    Account=str(input("輸入帳號"))
-    customer_id=DB_connect(f"SELECT CUSTOMER_ID FROM TCG_CORE.US_CUSTOMER WHERE CUSTOMER_NAME='gi8viet@{Account}'")
-    Change_Password(customer_id)
+    customer_id=DB_connect("SELECT CUSTOMER_ID FROM TCG_CORE.US_CUSTOMER WHERE CUSTOMER_NAME='gi8viet@bnm005'")
+    request_code(customer_id)
     
 main()

@@ -1,4 +1,26 @@
 testing_account:
+  bnm005:
+    promotionId: 4325092
+    first_depost: 500
+
+testing_account_for_deposit_only:
+  carrine008:
+    first_depost: 100
+  bnm111:
+    first_depost: 100
+  bnm888:
+    first_depost: 100
+  bnm777:
+    first_depost: 100
+  bnm005:
+    first_depost: 100
+  bnm987:
+    first_depost: 100
+  bnm987:
+    first_depost: 100
   bdd801:
-    first_depost: 550
-    
+    first_depost: 100
+  bdd807:
+    first_depost: 100
+  bdd300:
+    first_depost: 100

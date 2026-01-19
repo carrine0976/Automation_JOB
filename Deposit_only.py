@@ -69,7 +69,7 @@ def DB_connect(SQL):
             cursor.close()
         if conn in locals() and conn:
             conn.close()
-def get_claim_id(CustomerId,promotionId):
+def get_claim_id(CustomerId):
     try:
         CustomerIP=".".join(str(random.randint(0,255)) for _ in range(4))
         URL="http://10.80.1.19:8084/promo-fe/resources/extra_reward/claim_list/unapplied"
@@ -78,7 +78,7 @@ def get_claim_id(CustomerId,promotionId):
             "CustomerIP":CustomerIP,
             "CustomerId":CustomerId
         }
-        print(promotionId)
+        
         response=requests.get(URL,headers=header,verify=False)
         response_json=response.json()
         if response_json.get("success"):
@@ -149,7 +149,7 @@ class Frontend:
                 datetime.now() < self.token_expire)
     
         
-    def deposit_QAD(self,username,amount,promotionId):
+    def deposit_QAD(self,username,amount):
         success_fail=0
         success_count=0
 
@@ -178,9 +178,7 @@ class Frontend:
             'x-requested-with': 'XMLHttpRequest',  
             'x-timestamp': unit_time     
         }
-        customer_id=DB_connect(f"SELECT CUSTOMER_ID FROM TCG_CORE.US_CUSTOMER WHERE CUSTOMER_NAME='gi8viet@{username}'")
-        promoClaimId=get_claim_id(customer_id,promotionId)
-        print(promoClaimId)
+        
         payload={
             "targetUsername": username,
             "amount":amount,
@@ -191,8 +189,6 @@ class Frontend:
             "deviceId": "b1c6a230-98ec-fbe9-6079-72e43344c302",
             "mcsBankCode": "WECHATTHB",
             "token":self.token,
-            "promotionId":promotionId,
-            "promoClaimId":promoClaimId
         }
         
         
@@ -342,7 +338,7 @@ def procedure():
         yaml_path=os.path.join(current_dir,"config_poetry.yaml")
         with open(yaml_path,"r",encoding="utf-8") as f:
             config=yaml.safe_load(f)
-        testing_account=config.get("testing_account")
+        testing_account=config.get("testing_account_for_deposit_only")
         
         for username, deposit_info  in testing_account.items():
 
@@ -357,32 +353,31 @@ def procedure():
                 frontend = Frontend(credential)
                 if frontend.token:
                     first_amount=deposit_info.get("first_depost")
-                    promotionId=deposit_info.get("promotionId")
                     second_amount=deposit_info.get("second_depost")
                     third_amount=deposit_info.get("third_depost")
                     four_amount=deposit_info.get("four_depost")
                     five_amount=deposit_info.get("five_depost")
-                    if first_amount and promotionId:
+                    if first_amount :
                         
-                        frontend.deposit_QAD(credential['username'],first_amount,promotionId)
-                        
+                        frontend.deposit_QAD(credential['username'],first_amount)
+                        '''
                         backend=Backend(credential_be)
                         if backend.token:
                             deposit_info=backend.deposit(username,merchantCode)
                             backend.approve_deposit(deposit_info,merchantCode)
-                        
+                        '''
                         time.sleep(1)
                     if second_amount:
-                        frontend.deposit_QAD(credential['username'],second_amount,promotionId)
+                        frontend.deposit_QAD(credential['username'],second_amount)
                         time.sleep(1)
                     if third_amount:
-                        frontend.deposit_QAD(credential['username'],third_amount,promotionId)
+                        frontend.deposit_QAD(credential['username'],third_amount)
                         time.sleep(1)
                     if four_amount:
-                        frontend.deposit_QAD(credential['username'],four_amount,promotionId)
+                        frontend.deposit_QAD(credential['username'],four_amount)
                         time.sleep(1)
                     if five_amount:
-                        frontend.deposit_QAD(credential['username'],five_amount,promotionId)
+                        frontend.deposit_QAD(credential['username'],five_amount)
                         time.sleep(1)
             
             except Exception as e:

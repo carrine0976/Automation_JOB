@@ -92,11 +92,8 @@ class B_end:
             
             if response_data.get('success') :
                 value=response_data.get('value',[])
-                if self.credential["operatorName"]=="carrine01":
-                    executionNo=value[1].get("executionNo")
-                else:
-                    executionNo=value[0].get("executionNo")
                 
+                executionNo=value[0].get("executionNo")
                 logging.info(f"拿到補派id {executionNo} ")
                 return executionNo
                 
@@ -128,12 +125,12 @@ class B_end:
             response_data = response.json()
             
             if response_data.get('success') :
-                logging.info("補派成功: ")
-                return True
+                logging.info(f"補派成功: {executionNo}")
+                return True 
                 
             else:
                 error_msg = response_data.get("message", "未知錯誤")
-                logging.error(f"補派失敗: {error_msg}")
+                logging.error(f"補派失敗: {error_msg}{executionNo}")
                 return False
             
         except Exception as e:
@@ -152,14 +149,14 @@ def main():
         {
             "operatorName": "parisv01",
             "password": "Aa123456@",
-            "Merchant": "huamei",
-            "MerchantCode": "huamei",
+            "Merchant": "gi8viet",
+            "MerchantCode": "gi8viet",
         },
         {
             "operatorName": "carrine01",
             "password": "Test@1234",
-            "Merchant": "huamei",
-            "MerchantCode": "huamei",
+            "Merchant": "gi8viet",
+            "MerchantCode": "gi8viet",
             #"Merchant": "huamei",
             #"MerchantCode": "huamei",
         }

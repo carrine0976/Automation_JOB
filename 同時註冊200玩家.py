@@ -193,8 +193,8 @@ async def main():
     MerchantCode="gi8viet"
     member_list=[]
     
-    for i in range(300):
-        acount=f"ijijwe{i}"
+    for i in range(30):
+        acount=f"bnm961{i}"
         member_list.append(acount)
     async with aiohttp.ClientSession() as session:
         tasks=[
@@ -203,7 +203,7 @@ async def main():
         ]
         await asyncio.gather(*tasks)
         
-        customer_id_list=Search_Customer_id.main_batch(member_list,MerchantCode)
+        customer_id_list=Search_Customer_id.main_batch(member_list)
         #get_customer_id(session,member_list,MerchantCode)
         await create_wallet(session,customer_id_list)
         await batch_login(session,member_list,batch_size=1,delay=1)

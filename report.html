@@ -3,11 +3,332 @@
   <head>
     <meta charset="utf-8"/>
     <title id="head-title">report.html</title>
-      <link href="assets/style.css" rel="stylesheet" type="text/css"/>
+      <style type="text/css">body {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  /* do not increase min-width as some may use split screens */
+  min-width: 800px;
+  color: #999;
+}
+
+h1 {
+  font-size: 24px;
+  color: black;
+}
+
+h2 {
+  font-size: 16px;
+  color: black;
+}
+
+p {
+  color: black;
+}
+
+a {
+  color: #999;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+/******************************
+ * SUMMARY INFORMATION
+ ******************************/
+#environment td {
+  padding: 5px;
+  border: 1px solid #e6e6e6;
+  vertical-align: top;
+}
+#environment tr:nth-child(odd) {
+  background-color: #f6f6f6;
+}
+#environment ul {
+  margin: 0;
+  padding: 0 20px;
+}
+
+/******************************
+ * TEST RESULT COLORS
+ ******************************/
+span.passed,
+.passed .col-result {
+  color: green;
+}
+
+span.skipped,
+span.xfailed,
+span.rerun,
+.skipped .col-result,
+.xfailed .col-result,
+.rerun .col-result {
+  color: orange;
+}
+
+span.error,
+span.failed,
+span.xpassed,
+.error .col-result,
+.failed .col-result,
+.xpassed .col-result {
+  color: red;
+}
+
+.col-links__extra {
+  margin-right: 3px;
+}
+
+/******************************
+ * RESULTS TABLE
+ *
+ * 1. Table Layout
+ * 2. Extra
+ * 3. Sorting items
+ *
+ ******************************/
+/*------------------
+ * 1. Table Layout
+ *------------------*/
+#results-table {
+  border: 1px solid #e6e6e6;
+  color: #999;
+  font-size: 12px;
+  width: 100%;
+}
+#results-table th,
+#results-table td {
+  padding: 5px;
+  border: 1px solid #e6e6e6;
+  text-align: left;
+}
+#results-table th {
+  font-weight: bold;
+}
+
+/*------------------
+ * 2. Extra
+ *------------------*/
+.logwrapper {
+  max-height: 230px;
+  overflow-y: scroll;
+  background-color: #e6e6e6;
+}
+.logwrapper.expanded {
+  max-height: none;
+}
+.logwrapper.expanded .logexpander:after {
+  content: "collapse [-]";
+}
+.logwrapper .logexpander {
+  z-index: 1;
+  position: sticky;
+  top: 10px;
+  width: max-content;
+  border: 1px solid;
+  border-radius: 3px;
+  padding: 5px 7px;
+  margin: 10px 0 10px calc(100% - 80px);
+  cursor: pointer;
+  background-color: #e6e6e6;
+}
+.logwrapper .logexpander:after {
+  content: "expand [+]";
+}
+.logwrapper .logexpander:hover {
+  color: #000;
+  border-color: #000;
+}
+.logwrapper .log {
+  min-height: 40px;
+  position: relative;
+  top: -50px;
+  height: calc(100% + 50px);
+  border: 1px solid #e6e6e6;
+  color: black;
+  display: block;
+  font-family: "Courier New", Courier, monospace;
+  padding: 5px;
+  padding-right: 80px;
+  white-space: pre-wrap;
+}
+
+div.media {
+  border: 1px solid #e6e6e6;
+  float: right;
+  height: 240px;
+  margin: 0 5px;
+  overflow: hidden;
+  width: 320px;
+}
+
+.media-container {
+  display: grid;
+  grid-template-columns: 25px auto 25px;
+  align-items: center;
+  flex: 1 1;
+  overflow: hidden;
+  height: 200px;
+}
+
+.media-container--fullscreen {
+  grid-template-columns: 0px auto 0px;
+}
+
+.media-container__nav--right,
+.media-container__nav--left {
+  text-align: center;
+  cursor: pointer;
+}
+
+.media-container__viewport {
+  cursor: pointer;
+  text-align: center;
+  height: inherit;
+}
+.media-container__viewport img,
+.media-container__viewport video {
+  object-fit: cover;
+  width: 100%;
+  max-height: 100%;
+}
+
+.media__name,
+.media__counter {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex: 0 0 25px;
+  align-items: center;
+}
+
+.collapsible td:not(.col-links) {
+  cursor: pointer;
+}
+.collapsible td:not(.col-links):hover::after {
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+}
+
+.col-result {
+  width: 130px;
+}
+.col-result:hover::after {
+  content: " (hide details)";
+}
+
+.col-result.collapsed:hover::after {
+  content: " (show details)";
+}
+
+#environment-header h2:hover::after {
+  content: " (hide details)";
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+#environment-header.collapsed h2:hover::after {
+  content: " (show details)";
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/*------------------
+ * 3. Sorting items
+ *------------------*/
+.sortable {
+  cursor: pointer;
+}
+.sortable.desc:after {
+  content: " ";
+  position: relative;
+  left: 5px;
+  bottom: -12.5px;
+  border: 10px solid #4caf50;
+  border-bottom: 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
+}
+.sortable.asc:after {
+  content: " ";
+  position: relative;
+  left: 5px;
+  bottom: 12.5px;
+  border: 10px solid #4caf50;
+  border-top: 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
+}
+
+.hidden, .summary__reload__button.hidden {
+  display: none;
+}
+
+.summary__data {
+  flex: 0 0 550px;
+}
+.summary__reload {
+  flex: 1 1;
+  display: flex;
+  justify-content: center;
+}
+.summary__reload__button {
+  flex: 0 0 300px;
+  display: flex;
+  color: white;
+  font-weight: bold;
+  background-color: #4caf50;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.summary__reload__button:hover {
+  background-color: #46a049;
+}
+.summary__spacer {
+  flex: 0 0 550px;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+}
+
+.filters,
+.collapse {
+  display: flex;
+  align-items: center;
+}
+.filters button,
+.collapse button {
+  color: #999;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.filters button:hover,
+.collapse button:hover {
+  color: #ccc;
+}
+
+.filter__label {
+  margin-right: 10px;
+}
+
+      </style>
+    
   </head>
   <body>
     <h1 id="title">report.html</h1>
-    <p>Report generated on 01-Dec-2025 at 11:25:16 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a>
+    <p>Report generated on 12-Jan-2026 at 12:36:13 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a>
         v4.1.1</p>
     <div id="environment-header">
       <h2>Environment</h2>
@@ -61,7 +382,7 @@
         <h2>Summary</h2>
         <div class="additional-summary prefix">
         </div>
-        <p class="run-count">0 test took 0 ms.</p>
+        <p class="run-count">17 tests took 00:00:11.</p>
         <p class="filter">(Un)check the boxes to filter the results.</p>
         <div class="summary__reload">
           <div class="summary__reload__button hidden" onclick="location.reload()">
@@ -71,10 +392,10 @@
         <div class="summary__spacer"></div>
         <div class="controls">
           <div class="filters">
-            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="failed" disabled/>
-            <span class="failed">0 Failed,</span>
-            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="passed" disabled/>
-            <span class="passed">0 Passed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="failed" />
+            <span class="failed">7 Failed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="passed" />
+            <span class="passed">10 Passed,</span>
             <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="skipped" disabled/>
             <span class="skipped">0 Skipped,</span>
             <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xfailed" disabled/>
@@ -108,7 +429,7 @@
     </table>
   </body>
   <footer>
-    <div id="data-container" data-jsonblob="{&#34;environment&#34;: {&#34;Python&#34;: &#34;3.12.7&#34;, &#34;Platform&#34;: &#34;macOS-14.6.1-arm64-arm-64bit&#34;, &#34;Packages&#34;: {&#34;pytest&#34;: &#34;9.0.1&#34;, &#34;pluggy&#34;: &#34;1.6.0&#34;}, &#34;Plugins&#34;: {&#34;html&#34;: &#34;4.1.1&#34;, &#34;metadata&#34;: &#34;3.1.1&#34;}}, &#34;tests&#34;: {}, &#34;renderCollapsed&#34;: [&#34;passed&#34;], &#34;initialSort&#34;: &#34;result&#34;, &#34;title&#34;: &#34;report.html&#34;}"></div>
+    <div id="data-container" data-jsonblob="{&#34;environment&#34;: {&#34;Python&#34;: &#34;3.12.7&#34;, &#34;Platform&#34;: &#34;macOS-14.6.1-arm64-arm-64bit&#34;, &#34;Packages&#34;: {&#34;pytest&#34;: &#34;9.0.1&#34;, &#34;pluggy&#34;: &#34;1.6.0&#34;}, &#34;Plugins&#34;: {&#34;html&#34;: &#34;4.1.1&#34;, &#34;metadata&#34;: &#34;3.1.1&#34;, &#34;allure-pytest&#34;: &#34;2.15.2&#34;}}, &#34;tests&#34;: {&#34;test_TCG122553.py::test_postCard[TCG122553.010.070]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_TCG122553.py::test_postCard[TCG122553.010.070]&#34;, &#34;duration&#34;: &#34;00:00:08&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_TCG122553.py::test_postCard[TCG122553.010.070]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:08&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;test_TCG122553.py::test_postCard[TCG122553.010.080]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_TCG122553.py::test_postCard[TCG122553.010.080]&#34;, &#34;duration&#34;: &#34;194 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_TCG122553.py::test_postCard[TCG122553.010.080]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;194 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;test_TCG122553.py::test_postCard[TCG122553.010.090]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_TCG122553.py::test_postCard[TCG122553.010.090]&#34;, &#34;duration&#34;: &#34;165 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_TCG122553.py::test_postCard[TCG122553.010.090]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;165 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;test_TCG122553.py::test_postCard[TCG122553.010.100]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_TCG122553.py::test_postCard[TCG122553.010.100]&#34;, &#34;duration&#34;: &#34;163 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_TCG122553.py::test_postCard[TCG122553.010.100]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;163 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;backend = &amp;lt;test_TCG122553.Backend object at 0x1028b44d0&amp;gt;, merchant_code = &amp;#x27;gi8viet&amp;#x27;, field_path = &amp;#x27;promotionId&amp;#x27;, bad_value = 3544453\nexpected_msg = &amp;#x27;postcard_code_setting_not_found&amp;#x27;, expected_code = &amp;#x27;postcard_code_setting_not_found&amp;#x27;\n\n    @pytest.mark.parametrize(&amp;quot;field_path,bad_value,expected_msg,expected_code&amp;quot;, test_cases)\n    def test_postCard(backend, merchant_code, field_path, bad_value, expected_msg, expected_code):\n    \n        test_copy = copy.deepcopy(base_payload_update)\n        backend.set_value(test_copy, field_path, bad_value)\n        logging.info(f&amp;quot;=== \u57f7\u884c\u6e2c\u8a66\uff1a{field_path}&amp;quot;)\n        API_URL2 = &amp;quot;http://sit-admin2.tcg.com/tac/api/relay/put/promo-promotion-postcard-code-setting?pid=247813&amp;quot;\n        headers = backend.header(merchant_code)\n    \n    \n        response = requests.put(API_URL2, headers=headers, json=test_copy, verify=False)\n        response_data = response.json()\n    \n        if response.status_code == 200:\n            response_error_message = response_data.get(&amp;#x27;message&amp;#x27;)\n            response_error_code = response_data.get(&amp;#x27;errorCode&amp;#x27;)\n            if response_data.get(&amp;quot;success&amp;quot;) is True:\n                assert response_error_message is None and response_error_code is None,f&amp;quot;\u9810\u671f\u932f\u8aa4:msg={expected_msg}&amp;quot;\n            else:\n&amp;gt;               assert response_error_message == expected_msg and response_error_code == expected_code, \\\n                    f&amp;quot;\u8a0a\u606f: {response_error_message}, \u932f\u8aa4\u78bc: {response_error_code}&amp;quot;\nE               AssertionError: \u8a0a\u606f: postcard_code_default_lang_required, \u932f\u8aa4\u78bc: postcard_code_default_lang_required\nE               assert (&amp;#x27;postcard_cod...lang_required&amp;#x27; == &amp;#x27;postcard_cod...ing_not_found&amp;#x27;\nE                 \nE                 - postcard_code_setting_not_found\nE                 + postcard_code_default_lang_required)\n\ntest_TCG122553.py:142: AssertionError\n&#34;}], &#34;test_TCG122553.py::test_postCard[TCG122553.010.120]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_TCG122553.py::test_postCard[TCG122553.010.120]&#34;, &#34;duration&#34;: &#34;163 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_TCG122553.py::test_postCard[TCG122553.010.120]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;163 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;backend = &amp;lt;test_TCG122553.Backend object at 0x1028b44d0&amp;gt;, merchant_code = &amp;#x27;gi8viet&amp;#x27;, field_path = &amp;#x27;cooldownMinutes&amp;#x27;, bad_value = 4\nexpected_msg = &amp;#x27;cooldown_time_minimum_required&amp;#x27;, expected_code = &amp;#x27;cooldown_time_minimum_required&amp;#x27;\n\n    @pytest.mark.parametrize(&amp;quot;field_path,bad_value,expected_msg,expected_code&amp;quot;, test_cases)\n    def test_postCard(backend, merchant_code, field_path, bad_value, expected_msg, expected_code):\n    \n        test_copy = copy.deepcopy(base_payload_update)\n        backend.set_value(test_copy, field_path, bad_value)\n        logging.info(f&amp;quot;=== \u57f7\u884c\u6e2c\u8a66\uff1a{field_path}&amp;quot;)\n        API_URL2 = &amp;quot;http://sit-admin2.tcg.com/tac/api/relay/put/promo-promotion-postcard-code-setting?pid=247813&amp;quot;\n        headers = backend.header(merchant_code)\n    \n    \n        response = requests.put(API_URL2, headers=headers, json=test_copy, verify=False)\n        response_data = response.json()\n    \n        if response.status_code == 200:\n            response_error_message = response_data.get(&amp;#x27;message&amp;#x27;)\n            response_error_code = response_data.get(&amp;#x27;errorCode&amp;#x27;)\n            if response_data.get(&amp;quot;success&amp;quot;) is True:\n                assert response_error_message is None and response_error_code is None,f&amp;quot;\u9810\u671f\u932f\u8aa4:msg={expected_msg}&amp;quot;\n            else:\n&amp;gt;               assert response_error_message == expected_msg and response_error_code == expected_code, \\\n                    f&amp;quot;\u8a0a\u606f: {response_error_message}, \u932f\u8aa4\u78bc: {response_error_code}&amp;quot;\nE               AssertionError: \u8a0a\u606f: postcard_code_default_lang_required, \u932f\u8aa4\u78bc: postcard_code_default_lang_required\nE               assert (&amp;#x27;postcard_cod...lang_required&amp;#x27; == &amp;#x27;cooldown_tim...imum_required&amp;#x27;\nE                 \nE                 - cooldown_time_minimum_required\nE                 + postcard_code_default_lang_required)\n\ntest_TCG122553.py:142: AssertionError\n&#34;}], &#34;test_TCG122553.py::test_postCard[TCG122553.010.110]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_TCG122553.py::test_postCard[TCG122553.010.110]&#34;, &#34;duration&#34;: &#34;161 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_TCG122553.py::test_postCard[TCG122553.010.110]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;161 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;test_TCG122553.py::test_postCard[TCG122553.010.130]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_TCG122553.py::test_postCard[TCG122553.010.130]&#34;, &#34;duration&#34;: &#34;177 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_TCG122553.py::test_postCard[TCG122553.010.130]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;177 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;test_TCG122553.py::test_postCard[TCG122553.010.150]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_TCG122553.py::test_postCard[TCG122553.010.150]&#34;, &#34;duration&#34;: &#34;158 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_TCG122553.py::test_postCard[TCG122553.010.150]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;158 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;test_TCG122553.py::test_postCard[TCG122553.010.160]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_TCG122553.py::test_postCard[TCG122553.010.160]&#34;, &#34;duration&#34;: &#34;184 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_TCG122553.py::test_postCard[TCG122553.010.160]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;184 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;backend = &amp;lt;test_TCG122553.Backend object at 0x1028b44d0&amp;gt;, merchant_code = &amp;#x27;gi8viet&amp;#x27;, field_path = &amp;#x27;dailyCountLimit&amp;#x27;, bad_value = -1\nexpected_msg = &amp;#x27;postcard_code_invalid_count_limit&amp;#x27;, expected_code = &amp;#x27;postcard_code_invalid_count_limit&amp;#x27;\n\n    @pytest.mark.parametrize(&amp;quot;field_path,bad_value,expected_msg,expected_code&amp;quot;, test_cases)\n    def test_postCard(backend, merchant_code, field_path, bad_value, expected_msg, expected_code):\n    \n        test_copy = copy.deepcopy(base_payload_update)\n        backend.set_value(test_copy, field_path, bad_value)\n        logging.info(f&amp;quot;=== \u57f7\u884c\u6e2c\u8a66\uff1a{field_path}&amp;quot;)\n        API_URL2 = &amp;quot;http://sit-admin2.tcg.com/tac/api/relay/put/promo-promotion-postcard-code-setting?pid=247813&amp;quot;\n        headers = backend.header(merchant_code)\n    \n    \n        response = requests.put(API_URL2, headers=headers, json=test_copy, verify=False)\n        response_data = response.json()\n    \n        if response.status_code == 200:\n            response_error_message = response_data.get(&amp;#x27;message&amp;#x27;)\n            response_error_code = response_data.get(&amp;#x27;errorCode&amp;#x27;)\n            if response_data.get(&amp;quot;success&amp;quot;) is True:\n                assert response_error_message is None and response_error_code is None,f&amp;quot;\u9810\u671f\u932f\u8aa4:msg={expected_msg}&amp;quot;\n            else:\n&amp;gt;               assert response_error_message == expected_msg and response_error_code == expected_code, \\\n                    f&amp;quot;\u8a0a\u606f: {response_error_message}, \u932f\u8aa4\u78bc: {response_error_code}&amp;quot;\nE               AssertionError: \u8a0a\u606f: postcard_code_multiple_count_limit_not_allowed, \u932f\u8aa4\u78bc: postcard_code_multiple_count_limit_not_allowed\nE               assert (&amp;#x27;postcard_cod...t_not_allowed&amp;#x27; == &amp;#x27;postcard_cod...d_count_limit&amp;#x27;\nE                 \nE                 - postcard_code_invalid_count_limit\nE                 + postcard_code_multiple_count_limit_not_allowed)\n\ntest_TCG122553.py:142: AssertionError\n&#34;}], &#34;test_TCG122553.py::test_postCard[TCG122553.010.170]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_TCG122553.py::test_postCard[TCG122553.010.170]&#34;, &#34;duration&#34;: &#34;170 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_TCG122553.py::test_postCard[TCG122553.010.170]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;170 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;backend = &amp;lt;test_TCG122553.Backend object at 0x1028b44d0&amp;gt;, merchant_code = &amp;#x27;gi8viet&amp;#x27;, field_path = &amp;#x27;weeklyCountLimit&amp;#x27;, bad_value = -1\nexpected_msg = &amp;#x27;postcard_code_invalid_count_limit&amp;#x27;, expected_code = &amp;#x27;postcard_code_invalid_count_limit&amp;#x27;\n\n    @pytest.mark.parametrize(&amp;quot;field_path,bad_value,expected_msg,expected_code&amp;quot;, test_cases)\n    def test_postCard(backend, merchant_code, field_path, bad_value, expected_msg, expected_code):\n    \n        test_copy = copy.deepcopy(base_payload_update)\n        backend.set_value(test_copy, field_path, bad_value)\n        logging.info(f&amp;quot;=== \u57f7\u884c\u6e2c\u8a66\uff1a{field_path}&amp;quot;)\n        API_URL2 = &amp;quot;http://sit-admin2.tcg.com/tac/api/relay/put/promo-promotion-postcard-code-setting?pid=247813&amp;quot;\n        headers = backend.header(merchant_code)\n    \n    \n        response = requests.put(API_URL2, headers=headers, json=test_copy, verify=False)\n        response_data = response.json()\n    \n        if response.status_code == 200:\n            response_error_message = response_data.get(&amp;#x27;message&amp;#x27;)\n            response_error_code = response_data.get(&amp;#x27;errorCode&amp;#x27;)\n            if response_data.get(&amp;quot;success&amp;quot;) is True:\n                assert response_error_message is None and response_error_code is None,f&amp;quot;\u9810\u671f\u932f\u8aa4:msg={expected_msg}&amp;quot;\n            else:\n&amp;gt;               assert response_error_message == expected_msg and response_error_code == expected_code, \\\n                    f&amp;quot;\u8a0a\u606f: {response_error_message}, \u932f\u8aa4\u78bc: {response_error_code}&amp;quot;\nE               AssertionError: \u8a0a\u606f: postcard_code_multiple_count_limit_not_allowed, \u932f\u8aa4\u78bc: postcard_code_multiple_count_limit_not_allowed\nE               assert (&amp;#x27;postcard_cod...t_not_allowed&amp;#x27; == &amp;#x27;postcard_cod...d_count_limit&amp;#x27;\nE                 \nE                 - postcard_code_invalid_count_limit\nE                 + postcard_code_multiple_count_limit_not_allowed)\n\ntest_TCG122553.py:142: AssertionError\n&#34;}], &#34;test_TCG122553.py::test_postCard[TCG122553.010.180]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_TCG122553.py::test_postCard[TCG122553.010.180]&#34;, &#34;duration&#34;: &#34;173 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_TCG122553.py::test_postCard[TCG122553.010.180]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;173 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;test_TCG122553.py::test_postCard[TCG122553.010.190]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_TCG122553.py::test_postCard[TCG122553.010.190]&#34;, &#34;duration&#34;: &#34;169 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_TCG122553.py::test_postCard[TCG122553.010.190]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;169 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;backend = &amp;lt;test_TCG122553.Backend object at 0x1028b44d0&amp;gt;, merchant_code = &amp;#x27;gi8viet&amp;#x27;, field_path = &amp;#x27;codeEffectiveTime&amp;#x27;, bad_value = 400\nexpected_msg = &amp;#x27;postcard_code_effective_time_exceeds_max_limit&amp;#x27;, expected_code = &amp;#x27;postcard_code_effective_time_exceeds_max_limit&amp;#x27;\n\n    @pytest.mark.parametrize(&amp;quot;field_path,bad_value,expected_msg,expected_code&amp;quot;, test_cases)\n    def test_postCard(backend, merchant_code, field_path, bad_value, expected_msg, expected_code):\n    \n        test_copy = copy.deepcopy(base_payload_update)\n        backend.set_value(test_copy, field_path, bad_value)\n        logging.info(f&amp;quot;=== \u57f7\u884c\u6e2c\u8a66\uff1a{field_path}&amp;quot;)\n        API_URL2 = &amp;quot;http://sit-admin2.tcg.com/tac/api/relay/put/promo-promotion-postcard-code-setting?pid=247813&amp;quot;\n        headers = backend.header(merchant_code)\n    \n    \n        response = requests.put(API_URL2, headers=headers, json=test_copy, verify=False)\n        response_data = response.json()\n    \n        if response.status_code == 200:\n            response_error_message = response_data.get(&amp;#x27;message&amp;#x27;)\n            response_error_code = response_data.get(&amp;#x27;errorCode&amp;#x27;)\n            if response_data.get(&amp;quot;success&amp;quot;) is True:\n                assert response_error_message is None and response_error_code is None,f&amp;quot;\u9810\u671f\u932f\u8aa4:msg={expected_msg}&amp;quot;\n            else:\n&amp;gt;               assert response_error_message == expected_msg and response_error_code == expected_code, \\\n                    f&amp;quot;\u8a0a\u606f: {response_error_message}, \u932f\u8aa4\u78bc: {response_error_code}&amp;quot;\nE               AssertionError: \u8a0a\u606f: [EFFECTIVE_TIME_EXCEEDS_MAX_LIMIT] max: 365, \u932f\u8aa4\u78bc: postcard_code_effective_time_exceeds_max_limit\nE               assert (&amp;#x27;[EFFECTIVE_T...MIT] max: 365&amp;#x27; == &amp;#x27;postcard_cod...eds_max_limit&amp;#x27;\nE                 \nE                 - postcard_code_effective_time_exceeds_max_limit\nE                 + [EFFECTIVE_TIME_EXCEEDS_MAX_LIMIT] max: 365)\n\ntest_TCG122553.py:142: AssertionError\n&#34;}], &#34;test_TCG122553.py::test_postCard[TCG122553.010.200]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_TCG122553.py::test_postCard[TCG122553.010.200]&#34;, &#34;duration&#34;: &#34;180 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_TCG122553.py::test_postCard[TCG122553.010.200]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;180 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;backend = &amp;lt;test_TCG122553.Backend object at 0x1028b44d0&amp;gt;, merchant_code = &amp;#x27;gi8viet&amp;#x27;, field_path = &amp;#x27;codeEffectiveTime&amp;#x27;, bad_value = 0\nexpected_msg = &amp;#x27;postcard_code_effective_time_exceeds_max_limit&amp;#x27;, expected_code = &amp;#x27;postcard_code_effective_time_exceeds_max_limit&amp;#x27;\n\n    @pytest.mark.parametrize(&amp;quot;field_path,bad_value,expected_msg,expected_code&amp;quot;, test_cases)\n    def test_postCard(backend, merchant_code, field_path, bad_value, expected_msg, expected_code):\n    \n        test_copy = copy.deepcopy(base_payload_update)\n        backend.set_value(test_copy, field_path, bad_value)\n        logging.info(f&amp;quot;=== \u57f7\u884c\u6e2c\u8a66\uff1a{field_path}&amp;quot;)\n        API_URL2 = &amp;quot;http://sit-admin2.tcg.com/tac/api/relay/put/promo-promotion-postcard-code-setting?pid=247813&amp;quot;\n        headers = backend.header(merchant_code)\n    \n    \n        response = requests.put(API_URL2, headers=headers, json=test_copy, verify=False)\n        response_data = response.json()\n    \n        if response.status_code == 200:\n            response_error_message = response_data.get(&amp;#x27;message&amp;#x27;)\n            response_error_code = response_data.get(&amp;#x27;errorCode&amp;#x27;)\n            if response_data.get(&amp;quot;success&amp;quot;) is True:\n                assert response_error_message is None and response_error_code is None,f&amp;quot;\u9810\u671f\u932f\u8aa4:msg={expected_msg}&amp;quot;\n            else:\n&amp;gt;               assert response_error_message == expected_msg and response_error_code == expected_code, \\\n                    f&amp;quot;\u8a0a\u606f: {response_error_message}, \u932f\u8aa4\u78bc: {response_error_code}&amp;quot;\nE               AssertionError: \u8a0a\u606f: postcard_code_invalid_code_effective_time, \u932f\u8aa4\u78bc: postcard_code_invalid_code_effective_time\nE               assert (&amp;#x27;postcard_cod...ffective_time&amp;#x27; == &amp;#x27;postcard_cod...eds_max_limit&amp;#x27;\nE                 \nE                 - postcard_code_effective_time_exceeds_max_limit\nE                 + postcard_code_invalid_code_effective_time)\n\ntest_TCG122553.py:142: AssertionError\n&#34;}], &#34;test_TCG122553.py::test_postCard[TCG122553.010.210]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_TCG122553.py::test_postCard[TCG122553.010.210]&#34;, &#34;duration&#34;: &#34;156 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_TCG122553.py::test_postCard[TCG122553.010.210]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;156 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;test_TCG122553.py::test_postCard[TCG122553.010.220]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_TCG122553.py::test_postCard[TCG122553.010.220]&#34;, &#34;duration&#34;: &#34;198 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_TCG122553.py::test_postCard[TCG122553.010.220]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;198 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;test_TCG122553.py::test_postCard[TCG122553.010.230]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_TCG122553.py::test_postCard[TCG122553.010.230]&#34;, &#34;duration&#34;: &#34;200 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_TCG122553.py::test_postCard[TCG122553.010.230]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;200 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}], &#34;test_TCG122553.py::test_postCard[TCG122553.010.240]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_TCG122553.py::test_postCard[TCG122553.010.240]&#34;, &#34;duration&#34;: &#34;186 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_TCG122553.py::test_postCard[TCG122553.010.240]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;186 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;backend = &amp;lt;test_TCG122553.Backend object at 0x1028b44d0&amp;gt;, merchant_code = &amp;#x27;gi8viet&amp;#x27;, field_path = &amp;#x27;ruleEnabled&amp;#x27;, bad_value = &amp;#x27;Y&amp;#x27;\nexpected_msg = &amp;#x27;postcard_code_rule_locales_required&amp;#x27;, expected_code = &amp;#x27;postcard_code_rule_locales_required&amp;#x27;\n\n    @pytest.mark.parametrize(&amp;quot;field_path,bad_value,expected_msg,expected_code&amp;quot;, test_cases)\n    def test_postCard(backend, merchant_code, field_path, bad_value, expected_msg, expected_code):\n    \n        test_copy = copy.deepcopy(base_payload_update)\n        backend.set_value(test_copy, field_path, bad_value)\n        logging.info(f&amp;quot;=== \u57f7\u884c\u6e2c\u8a66\uff1a{field_path}&amp;quot;)\n        API_URL2 = &amp;quot;http://sit-admin2.tcg.com/tac/api/relay/put/promo-promotion-postcard-code-setting?pid=247813&amp;quot;\n        headers = backend.header(merchant_code)\n    \n    \n        response = requests.put(API_URL2, headers=headers, json=test_copy, verify=False)\n        response_data = response.json()\n    \n        if response.status_code == 200:\n            response_error_message = response_data.get(&amp;#x27;message&amp;#x27;)\n            response_error_code = response_data.get(&amp;#x27;errorCode&amp;#x27;)\n            if response_data.get(&amp;quot;success&amp;quot;) is True:\n                assert response_error_message is None and response_error_code is None,f&amp;quot;\u9810\u671f\u932f\u8aa4:msg={expected_msg}&amp;quot;\n            else:\n&amp;gt;               assert response_error_message == expected_msg and response_error_code == expected_code, \\\n                    f&amp;quot;\u8a0a\u606f: {response_error_message}, \u932f\u8aa4\u78bc: {response_error_code}&amp;quot;\nE               AssertionError: \u8a0a\u606f: postcard_code_default_lang_required, \u932f\u8aa4\u78bc: postcard_code_default_lang_required\nE               assert (&amp;#x27;postcard_cod...lang_required&amp;#x27; == &amp;#x27;postcard_cod...ales_required&amp;#x27;\nE                 \nE                 - postcard_code_rule_locales_required\nE                 ?               ^  ^  -- ^^^\nE                 + postcard_code_default_lang_required\nE                 ?               ^^^^  ^   ^^)\n\ntest_TCG122553.py:142: AssertionError\n&#34;}]}, &#34;renderCollapsed&#34;: [&#34;passed&#34;], &#34;initialSort&#34;: &#34;result&#34;, &#34;title&#34;: &#34;report.html&#34;}"></div>
     <script>
       (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const { getCollapsedCategory, setCollapsedIds } = require('./storage.js')

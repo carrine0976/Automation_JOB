@@ -493,7 +493,7 @@ class Backend:
                 response=requests.get(API_URL2, headers=headers, params=payload, cookies=cookies, verify=False)
 
                 response_data=response.json()
-                if response_data.get("success") == True:
+                if response_data.get("success") :
                     self.record_data_list=response_data.get('value',[])
                     return True
                 else:

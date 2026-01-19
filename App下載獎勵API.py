@@ -36,7 +36,7 @@ def main():
         if n==1:
             Merchant="gi8viet"
             CustomerName=str(input("CustomerName:"))
-            CustomerId=(main_batch(CustomerName,Merchant))
+            CustomerId=(main_batch(CustomerName))
             
             CustomerIP=".".join(str(random.randint(0,255)) for _ in range(4))
             uuid=random.randint(100000000, 999999999)
@@ -45,7 +45,7 @@ def main():
         elif n==2:
             Merchant="huamei"
             CustomerName=str(input("CustomerName:"))
-            CustomerId=main_batch(CustomerName,Merchant)
+            CustomerId=main_batch(CustomerName)
             
             CustomerIP=".".join(str(random.randint(0,255)) for _ in range(4))
             uuid=random.randint(100000000, 999999999)
@@ -54,7 +54,7 @@ def main():
         elif n==3:
             Merchant="tcgdemov3"
             CustomerName=str(input("CustomerName:"))
-            CustomerId=(main_batch(CustomerName,Merchant))
+            CustomerId=(main_batch(CustomerName))
 
             CustomerIP=".".join(str(random.randint(0,255)) for _ in range(4))
             uuid=random.randint(100000000, 999999999)
@@ -63,7 +63,7 @@ def main():
         elif n==4:
             Merchant="lodibet"
             CustomerName=str(input("CustomerName:"))
-            CustomerId=(main_batch(CustomerName,Merchant))
+            CustomerId=(main_batch(CustomerName))
             
             CustomerIP=".".join(str(random.randint(0,255)) for _ in range(4))
             uuid=random.randint(100000000, 999999999)
